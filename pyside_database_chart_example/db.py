@@ -90,9 +90,6 @@ class InstantSearchBar(QWidget):
     def getSearchBar(self):
         return self.__searchLineEdit
 
-    def getSearchLineEdit(self):
-        return self.__searchLineEdit
-
     def getSearchLabel(self):
         return self.__searchIcon
 
