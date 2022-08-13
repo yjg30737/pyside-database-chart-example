@@ -1,0 +1,17 @@
+from setuptools import setup, find_packages
+
+setup(
+    name='pyside-database-chart-example',
+    version='0.0.1',
+    author='Jung Gyu Yoon',
+    author_email='yjg30737@gmail.com',
+    license='MIT',
+    packages=find_packages(),
+    package_data={'ico': ['search.svg'],
+                  'style': ['lineedit.css', 'search_bar.css', 'widget.css']},
+    description='Example of using database and chart with PySide6',
+    url='https://github.com/yjg30737/pyside-database-chart-example.git',
+    install_requires=[
+        'PySide6'
+    ]
+)

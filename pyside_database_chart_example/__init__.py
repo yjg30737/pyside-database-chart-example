@@ -1,0 +1,1 @@
+from pyside_database_chart_example.main import Window
