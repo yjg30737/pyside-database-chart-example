@@ -7,8 +7,8 @@ setup(
     author_email='yjg30737@gmail.com',
     license='MIT',
     packages=find_packages(),
-    package_data={'pyqt_database_chart_example.ico': ['search.svg'],
-                  'pyqt_database_chart_example.style': ['lineedit.css', 'search_bar.css', 'widget.css']},
+    package_data={'pyside_database_chart_example.ico': ['search.svg'],
+                  'pyside_database_chart_example.style': ['lineedit.css', 'search_bar.css', 'widget.css']},
     description='Example of using database and chart with PySide6',
     url='https://github.com/yjg30737/pyside-database-chart-example.git',
     install_requires=[
