@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStyledItemDelegate, QLabel, QTableView, QAbstractItemView, QPushButton, \
@@ -67,13 +69,13 @@ class InstantSearchBar(QWidget):
         self.__label.setVisible(visibility)
 
     def __setStyle(self):
-        self.__searchIcon.load('ico/search.svg')
+        self.__searchIcon.load(os.path.join(os.path.dirname(__file__), 'ico/search.svg'))
         # set style sheet
-        with open('style/lineedit.css', 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__),'style/lineedit.css'), 'r') as f:
             self.__searchLineEdit.setStyleSheet(f.read())
-        with open('style/search_bar.css', 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'style/search_bar.css'), 'r') as f:
             self.__searchBar.setStyleSheet(f.read())
-        with open('style/widget.css', 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'style/widget.css'), 'r') as f:
             self.setStyleSheet(f.read())
 
     def __searched(self, text):
