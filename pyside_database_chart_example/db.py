@@ -171,6 +171,9 @@ class DatabaseWidget(QWidget):
         self.__view.setSortingEnabled(True)
         self.__view.sortByColumn(0, Qt.AscendingOrder)
 
+        # set current index as first record
+        self.__view.setCurrentIndex(self.__view.model().index(0, 0))
+
         # add/delete buttons
         addBtn = QPushButton('Add')
         addBtn.clicked.connect(self.__add)
