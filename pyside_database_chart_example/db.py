@@ -71,7 +71,7 @@ class InstantSearchBar(QWidget):
     def __setStyle(self):
         self.__searchIcon.load(os.path.join(os.path.dirname(__file__), 'ico/search.svg'))
         # set style sheet
-        with open(os.path.join(os.path.dirname(__file__),'style/lineedit.css'), 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'style/lineedit.css'), 'r') as f:
             self.__searchLineEdit.setStyleSheet(f.read())
         with open(os.path.join(os.path.dirname(__file__), 'style/search_bar.css'), 'r') as f:
             self.__searchBar.setStyleSheet(f.read())
@@ -177,8 +177,8 @@ class DatabaseWidget(QWidget):
         # add/delete buttons
         addBtn = QPushButton('Add')
         addBtn.clicked.connect(self.__add)
-        delBtn = QPushButton('Delete')
-        delBtn.clicked.connect(self.__delete)
+        self.__delBtn = QPushButton('Delete')
+        self.__delBtn.clicked.connect(self.__delete)
 
         # instant search bar
         self.__searchBar = InstantSearchBar()
@@ -199,7 +199,7 @@ class DatabaseWidget(QWidget):
         lay.addWidget(self.__searchBar)
         lay.addWidget(self.__comboBox)
         lay.addWidget(addBtn)
-        lay.addWidget(delBtn)
+        lay.addWidget(self.__delBtn)
         lay.setContentsMargins(0, 0, 0, 0)
         btnWidget = QWidget()
         btnWidget.setLayout(lay)
@@ -213,6 +213,9 @@ class DatabaseWidget(QWidget):
         # show default result (which means "show all")
         self.__showResult('')
 
+    def __delBtnToggle(self):
+        self.__delBtn.setEnabled(self.__view.model().rowCount() > 0)
+
     def __add(self):
         r = self.__tableModel.record()
         r.setValue("name", '')
@@ -220,22 +223,28 @@ class DatabaseWidget(QWidget):
         r.setValue("email", '')
         self.__tableModel.insertRecord(-1, r)
         self.__tableModel.select()
+        self.__view.setCurrentIndex(self.__view.model().index(self.__view.model().rowCount() - 1, 0))
         self.added.emit()
+        self.__delBtnToggle()
 
     def __delete(self):
-        self.__tableModel.removeRow(self.__view.currentIndex().row())
+        r = self.__view.currentIndex().row()
+        self.__tableModel.removeRow(r)
         self.__tableModel.select()
+        self.__view.setCurrentIndex(self.__view.model().index(max(0, r - 1), 0))
         self.deleted.emit()
+        self.__delBtnToggle()
 
     def __showResult(self, text):
         # index -1 will be read from all columns
         # otherwise it will be read the current column number indicated by combobox
-        self.__proxyModel.setFilterKeyColumn(self.__comboBox.currentIndex()-1)
+        self.__proxyModel.setFilterKeyColumn(self.__comboBox.currentIndex() - 1)
         # regular expression can be used
         self.__proxyModel.setFilterRegularExpression(text)
 
     def __currentIndexChanged(self, idx):
         self.__showResult(self.__searchBar.getSearchBar().text())
+
 
 def createConnection():
     con = QSqlDatabase.addDatabase("QSQLITE")
@@ -248,6 +257,7 @@ def createConnection():
         )
         return False
     return True
+
 
 def initTable():
     table = 'contacts'
@@ -273,6 +283,7 @@ def initTable():
         """
     )
     createTableQuery.exec()
+
 
 def addSample():
     table = 'contacts'
