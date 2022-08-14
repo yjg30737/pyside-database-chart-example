@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, DefaultDict
+from collections import defaultdict
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QBarSet, \
     QBarCategoryAxis, QBarSeries
-
+from PySide6.QtSql import QSqlQuery
 
 class ChartWidget(QWidget):
     def __init__(self):
@@ -12,54 +13,60 @@ class ChartWidget(QWidget):
     def __initUi(self):
         self.setWindowTitle("QtChart Example")
 
-        set0 = QBarSet("Joe")
-        set1 = QBarSet("Lara")
-        set2 = QBarSet("David")
-        set3 = QBarSet("Jane")
+        self.__series = QBarSeries()
 
-        def getTimeList() -> List[List[str]]:
-            joe_time_str_lst = ["2:51", "1:12", "3:15"]
-            lara_time_str_lst = ["3:25", "2:31", "4:27"]
-            david_time_str_lst = ["3:41", "7:33", "5:02"]
-            jane_time_str_lst = ["3:10", "2:43", "3:43"]
-            lst = [joe_time_str_lst, lara_time_str_lst, david_time_str_lst, jane_time_str_lst]
-            return lst
+        self.__chart = QChart()
+        self.__chart.setTitle("Barchart Example")
+        self.__chart.setAnimationOptions(QChart.SeriesAnimations)
+        self.__chart.setTheme(QChart.ChartThemeDark)
 
-        def setTimeToBarSet(time_str_lst_group: List[List[str]], barset: List[QBarSet]):
-            time_str_to_sec = lambda time_str: sum(x * int(t) for x, t in zip([60, 1], time_str.split(":")))
-            for i in range(len(time_str_lst_group)):
-                time_sec_lst = list(map(time_str_to_sec, time_str_lst_group[i]))
-                for time_sec in time_sec_lst:
-                    barset[i] <<= time_sec
-
-        time_lst = getTimeList()
-        barsets = [set0, set1, set2, set3]
-        setTimeToBarSet(time_lst, barsets)
-
-        series = QBarSeries()
-        series.append(set0)
-        series.append(set1)
-        series.append(set2)
-        series.append(set3)
-
-        chart = QChart()
-        chart.addSeries(series)
-        chart.setTitle("Barchart Example")
-        chart.setAnimationOptions(QChart.SeriesAnimations)
-        chart.setTheme(QChart.ChartThemeDark)
-
-        categories = ["City Escape", "Wild Canyon", "Prison Lane"]
-
-        axis = QBarCategoryAxis()
-        axis.append(categories)
-        chart.createDefaultAxes()
-        chart.setAxisX(axis, series)
+        self.__axis = QBarCategoryAxis()
 
         #create chartview and add the pyside_database_chart_example in the chartview
-        chartView = QChartView(chart)
+        chartView = QChartView(self.__chart)
 
         lay = QVBoxLayout()
         lay.addWidget(chartView)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
+
+    def __refreshChart(self):
+        self.__chart.addSeries(self.__series)
+        self.__chart.createDefaultAxes()
+        self.__chart.setAxisX(self.__axis, self.__series)
+
+    def setDatabase(self, database):
+        selectTableQuery = QSqlQuery()
+        attributes = ['city_escape', 'wild_canyon', 'prison_lane']
+        selectTableQuery.prepare(f'''
+        SELECT name, {attributes[0]}, {attributes[1]}, {attributes[2]} FROM contacts
+        ''')
+        selectTableQuery.exec()
+        name, city_escape, wild_canyon, prison_lane = range(4)
+        barsets = []
+        columns = defaultdict(list)
+        while selectTableQuery.next():
+            barset = QBarSet(selectTableQuery.value(name))
+            barsets.append(barset)
+            columns[' '.join(attributes[0].split('_')).title()].append(selectTableQuery.value(city_escape))
+            columns[' '.join(attributes[1].split('_')).title()].append(selectTableQuery.value(wild_canyon))
+            columns[' '.join(attributes[2].split('_')).title()].append(selectTableQuery.value(prison_lane))
+        self.__axis.append([' '.join(attribute.split('_')).title() for attribute in attributes])
+        self.setBarsets(barsets)
+        self.setColumnsToBarSet(columns, barsets)
+
+        self.__refreshChart()
+
+    def setBarsets(self, barsets: List[QBarSet]):
+        for barset in barsets:
+            self.__series.append(barset)
+
+    def setColumnsToBarSet(self, columns: DefaultDict[str, List[str]], barsets: List[QBarSet]):
+        time_str_lst_group = columns.values()
+        time_str_to_sec = lambda time_str: sum(x * int(t) for x, t in zip([60, 1], time_str.split(":")))
+        i = 0
+        for k, v in columns.items():
+            time_sec_lst = list(map(time_str_to_sec, v))
+            for i in range(len(time_sec_lst)):
+                barsets[i] <<= time_sec_lst[i]
