@@ -4,9 +4,13 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QBarSet, \
     QBarCategoryAxis, QBarSeries
 from PySide6.QtSql import QSqlQuery
+from PySide6.QtCore import Signal
 
 
 class ChartWidget(QWidget):
+    added = Signal()
+    deleted = Signal()
+
     def __init__(self):
         super().__init__()
         self.__initUi()
@@ -31,6 +35,9 @@ class ChartWidget(QWidget):
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
+
+        self.added.connect(self.__add)
+        self.deleted.connect(self.__delete)
 
     def __refreshChart(self):
         self.__chart.addSeries(self.__series)
@@ -68,3 +75,9 @@ class ChartWidget(QWidget):
             time_sec_lst = list(map(time_str_to_sec, v))
             for i in range(len(time_sec_lst)):
                 barsets[i] <<= time_sec_lst[i]
+
+    def __add(self):
+        print('add')
+
+    def __delete(self):
+        print('delete')

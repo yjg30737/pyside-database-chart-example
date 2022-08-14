@@ -120,6 +120,9 @@ class AlignDelegate(QStyledItemDelegate):
 
 
 class DatabaseWidget(QWidget):
+    added = Signal()
+    deleted = Signal()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__initUi()
@@ -214,10 +217,12 @@ class DatabaseWidget(QWidget):
         r.setValue("email", '')
         self.__tableModel.insertRecord(-1, r)
         self.__tableModel.select()
+        self.added.emit()
 
     def __delete(self):
         self.__tableModel.removeRow(self.__view.currentIndex().row())
         self.__tableModel.select()
+        self.deleted.emit()
 
     def __showResult(self, text):
         # index -1 will be read from all columns

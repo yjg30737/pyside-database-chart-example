@@ -17,6 +17,8 @@ class Window(QMainWindow):
 
         db = DatabaseWidget()
         chart = ChartWidget()
+        db.added.connect(chart.added)
+        db.deleted.connect(chart.deleted)
         chart.setDatabase()
 
         splitter = QSplitter()
