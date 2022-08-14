@@ -5,6 +5,7 @@ from PySide6.QtCharts import QChart, QChartView, QBarSet, \
     QBarCategoryAxis, QBarSeries
 from PySide6.QtSql import QSqlQuery
 
+
 class ChartWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -36,7 +37,7 @@ class ChartWidget(QWidget):
         self.__chart.createDefaultAxes()
         self.__chart.setAxisX(self.__axis, self.__series)
 
-    def setDatabase(self, database):
+    def setDatabase(self):
         selectTableQuery = QSqlQuery()
         attributes = ['city_escape', 'wild_canyon', 'prison_lane']
         selectTableQuery.prepare(f'''
@@ -49,13 +50,12 @@ class ChartWidget(QWidget):
         while selectTableQuery.next():
             barset = QBarSet(selectTableQuery.value(name))
             barsets.append(barset)
-            columns[' '.join(attributes[0].split('_')).title()].append(selectTableQuery.value(city_escape))
-            columns[' '.join(attributes[1].split('_')).title()].append(selectTableQuery.value(wild_canyon))
-            columns[' '.join(attributes[2].split('_')).title()].append(selectTableQuery.value(prison_lane))
+            columns[attributes[0]].append(selectTableQuery.value(city_escape))
+            columns[attributes[1]].append(selectTableQuery.value(wild_canyon))
+            columns[attributes[2]].append(selectTableQuery.value(prison_lane))
         self.__axis.append([' '.join(attribute.split('_')).title() for attribute in attributes])
         self.setBarsets(barsets)
         self.setColumnsToBarSet(columns, barsets)
-
         self.__refreshChart()
 
     def setBarsets(self, barsets: List[QBarSet]):
@@ -63,9 +63,7 @@ class ChartWidget(QWidget):
             self.__series.append(barset)
 
     def setColumnsToBarSet(self, columns: DefaultDict[str, List[str]], barsets: List[QBarSet]):
-        time_str_lst_group = columns.values()
         time_str_to_sec = lambda time_str: sum(x * int(t) for x, t in zip([60, 1], time_str.split(":")))
-        i = 0
         for k, v in columns.items():
             time_sec_lst = list(map(time_str_to_sec, v))
             for i in range(len(time_sec_lst)):
