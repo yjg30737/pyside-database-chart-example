@@ -19,6 +19,7 @@ class ChartWidget(QWidget):
         self.setWindowTitle("QtChart Example")
 
         self.__series = QBarSeries()
+        self.__series.hovered.connect(self.__seriesHovered)
 
         self.__chart = QChart()
         self.__chart.setTitle("Barchart Example")
@@ -68,6 +69,7 @@ class ChartWidget(QWidget):
 
     def setBarsets(self, barsets: List[QBarSet]):
         for barset in barsets:
+            # barset.hovered.connect(self.__barsetHovered)
             self.__series.append(barset)
 
     def setColumnsToBarSet(self, columns: DefaultDict[str, List[str]], barsets: List[QBarSet]):
@@ -83,3 +85,19 @@ class ChartWidget(QWidget):
 
     def __delete(self, id):
         print(f'{id} delete')
+
+    def __seriesHovered(self, status, idx, barset):
+        print('__seriesHovered')
+        print(f'On the bar: {status}')
+        print(f'Index of barset: {idx}')
+        print(f'Barset object: {barset}')
+        print(f'Barset object label: {barset.label()}')
+        print(f'Barset object category: {self.__axis.categories()[idx]}')
+        print(f'Barset object value: {barset.at(idx)}')
+        print('')
+
+    # def __barsetHovered(self, status, idx):
+    #     print('__barsetHovered')
+    #     print(f'On the bar: {status}')
+    #     print(f'Index of barset: {idx}')
+    #     print('')
