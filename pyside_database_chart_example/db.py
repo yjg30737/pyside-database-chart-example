@@ -121,7 +121,7 @@ class AlignDelegate(QStyledItemDelegate):
 
 class DatabaseWidget(QWidget):
     added = Signal(QSqlRecord)
-    deleted = Signal()
+    deleted = Signal(int)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,10 +229,11 @@ class DatabaseWidget(QWidget):
 
     def __delete(self):
         r = self.__view.currentIndex().row()
+        id = self.__tableModel.index(r, 0).data()
         self.__tableModel.removeRow(r)
         self.__tableModel.select()
         self.__view.setCurrentIndex(self.__view.model().index(max(0, r - 1), 0))
-        self.deleted.emit()
+        self.deleted.emit(id)
         self.__delBtnToggle()
 
     def __showResult(self, text):
