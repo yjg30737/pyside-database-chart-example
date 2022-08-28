@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery
+from PySide6.QtSql import QSqlTableModel, QSqlDatabase, QSqlQuery, QSqlRecord
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QStyledItemDelegate, QLabel, QTableView, QAbstractItemView, QPushButton, \
     QHBoxLayout, QSpacerItem, QSizePolicy, QWidget, QVBoxLayout, QMessageBox, QComboBox, QGridLayout, QApplication, \
@@ -120,7 +120,7 @@ class AlignDelegate(QStyledItemDelegate):
 
 
 class DatabaseWidget(QWidget):
-    added = Signal()
+    added = Signal(QSqlRecord)
     deleted = Signal()
 
     def __init__(self, *args, **kwargs):
@@ -224,7 +224,7 @@ class DatabaseWidget(QWidget):
         self.__tableModel.insertRecord(-1, r)
         self.__tableModel.select()
         self.__view.setCurrentIndex(self.__view.model().index(self.__view.model().rowCount() - 1, 0))
-        self.added.emit()
+        self.added.emit(r)
         self.__delBtnToggle()
 
     def __delete(self):
