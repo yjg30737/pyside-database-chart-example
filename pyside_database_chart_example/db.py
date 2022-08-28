@@ -225,6 +225,7 @@ class DatabaseWidget(QWidget):
         self.__tableModel.select()
         self.__view.setCurrentIndex(self.__view.model().index(self.__view.model().rowCount() - 1, 0))
         self.added.emit(r)
+        self.__view.edit(self.__view.currentIndex().siblingAtColumn(1))
         self.__delBtnToggle()
 
     def __delete(self):
