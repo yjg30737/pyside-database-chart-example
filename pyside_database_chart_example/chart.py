@@ -3,13 +3,13 @@ from collections import defaultdict
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtCharts import QChart, QChartView, QBarSet, \
     QBarCategoryAxis, QBarSeries
-from PySide6.QtSql import QSqlQuery
+from PySide6.QtSql import QSqlQuery, QSqlRecord
 from PySide6.QtCore import Signal
 
 
 class ChartWidget(QWidget):
-    added = Signal()
-    deleted = Signal()
+    added = Signal(QSqlRecord)
+    deleted = Signal(int)
 
     def __init__(self):
         super().__init__()
@@ -24,6 +24,7 @@ class ChartWidget(QWidget):
         self.__chart.setTitle("Barchart Example")
         self.__chart.setAnimationOptions(QChart.SeriesAnimations)
         self.__chart.setTheme(QChart.ChartThemeDark)
+        # self.__chart.setAcceptHoverEvents(True)
 
         self.__axis = QBarCategoryAxis()
 
@@ -76,8 +77,9 @@ class ChartWidget(QWidget):
             for i in range(len(time_sec_lst)):
                 barsets[i] <<= time_sec_lst[i]
 
-    def __add(self):
+    def __add(self, r):
+        print(r)
         print('add')
 
-    def __delete(self):
-        print('delete')
+    def __delete(self, id):
+        print(f'{id} delete')
