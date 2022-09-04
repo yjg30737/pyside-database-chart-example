@@ -36,11 +36,13 @@ class ChartWidget(QWidget):
         chartView.setRenderHints(QPainter.Antialiasing)
 
         self.__textBrowser = QTextBrowser()
+        self.__textBrowser.setPlaceholderText('Bar series info under the mouser cursor')
 
         splitter = QSplitter()
         splitter.addWidget(chartView)
         splitter.addWidget(self.__textBrowser)
         splitter.setOrientation(Qt.Vertical)
+        splitter.setHandleWidth(1)
         splitter.setSizes([700, 300])
         splitter.setChildrenCollapsible(False)
 
