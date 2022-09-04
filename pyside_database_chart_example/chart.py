@@ -1,10 +1,11 @@
 from typing import List, DefaultDict
 from collections import defaultdict
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextBrowser, QSplitter
 from PySide6.QtCharts import QChart, QChartView, QBarSet, \
     QBarCategoryAxis, QBarSeries
 from PySide6.QtSql import QSqlQuery, QSqlRecord
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QPainter
 
 
 class ChartWidget(QWidget):
@@ -25,15 +26,26 @@ class ChartWidget(QWidget):
         self.__chart.setTitle("Barchart Example")
         self.__chart.setAnimationOptions(QChart.SeriesAnimations)
         self.__chart.setTheme(QChart.ChartThemeDark)
+        # self.__chart.setAnimationOptions(QChart.AllAnimations)
         # self.__chart.setAcceptHoverEvents(True)
 
         self.__axis = QBarCategoryAxis()
 
         #create chartview and add the pyside_database_chart_example in the chartview
         chartView = QChartView(self.__chart)
+        chartView.setRenderHints(QPainter.Antialiasing)
+
+        self.__textBrowser = QTextBrowser()
+
+        splitter = QSplitter()
+        splitter.addWidget(chartView)
+        splitter.addWidget(self.__textBrowser)
+        splitter.setOrientation(Qt.Vertical)
+        splitter.setSizes([700, 300])
+        splitter.setChildrenCollapsible(False)
 
         lay = QVBoxLayout()
-        lay.addWidget(chartView)
+        lay.addWidget(splitter)
         lay.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(lay)
@@ -88,13 +100,15 @@ class ChartWidget(QWidget):
 
     def __seriesHovered(self, status, idx, barset):
         print('__seriesHovered')
-        print(f'On the bar: {status}')
-        print(f'Index of barset: {idx}')
-        print(f'Barset object: {barset}')
-        print(f'Barset object label: {barset.label()}')
-        print(f'Barset object category: {self.__axis.categories()[idx]}')
-        print(f'Barset object value: {barset.at(idx)}')
-        print('')
+        hoveredSeriesInfo = f'''
+        On the bar: {status}
+        Index of barset: {idx}
+        Barset object: {barset}
+        Barset object label: {barset.label()}
+        Barset object category: {self.__axis.categories()[idx]}
+        Barset object value: {barset.at(idx)}
+        '''
+        self.__textBrowser.setText(hoveredSeriesInfo)
 
     # def __barsetHovered(self, status, idx):
     #     print('__barsetHovered')
