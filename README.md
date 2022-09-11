@@ -31,3 +31,6 @@ if __name__ == "__main__":
 Result
 
 ![image](https://user-images.githubusercontent.com/55078043/184469977-8dc68ed2-6b76-47e1-8763-b430549392a4.png)
+
+## See Also
+* <a href="https://github.com/yjg30737/pyside-db-chart-mapping-example">pyside-db-chart-mapping-example</a> - map the db table view and chart with using `QVBarModelMapper`
