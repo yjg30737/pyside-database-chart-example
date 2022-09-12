@@ -13,12 +13,12 @@ class InstantSearchBar(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # search bar label
-        self.__label = QLabel()
-
         self.__initUi()
 
     def __initUi(self):
+        # search bar label
+        self.__label = QLabel()
+
         self.__searchLineEdit = QLineEdit()
         self.__searchIcon = QSvgWidget()
         ps = QApplication.font().pointSize()
