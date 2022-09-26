@@ -59,6 +59,9 @@ class ChartWidget(QWidget):
         self.__chart.addSeries(self.__series)
         self.__chart.createDefaultAxes()
         self.__chart.setAxisX(self.__axis, self.__series)
+        self.__axis.remove('Wild Canyon')
+        print(self.__axis.min(), self.__axis.max())
+        print(self.__axis.count())
 
     def setDatabase(self):
         selectTableQuery = QSqlQuery()
